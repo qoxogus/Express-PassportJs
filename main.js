@@ -12,12 +12,17 @@ var FileStore = require('session-file-store')(session)// 실제론 데이터베�
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(compression()); //압축
-app.use(session({
+app.use(session({ //세션을 활성화 시키는 코드
   secret: 'asdfasdf',
   resave: false,
   saveUninitialized: true,
   store: new FileStore()
 }))
+
+//passport는 세션을 내부적으로 사용하기 때문에 세션을 활성화 시키는 코드 다음에 passport가 등장해야한다
+
+var passport = require('passport') 
+  , LocalStrategy = require('passport-local').StrategyStrategy;
 
 app.get('*', function(request, response, next){ //next에 middleware가 담겨있다고 생각    불필요한 불러오기를 방지하기 위해 get을 사용(post방식 등에서 방지)   '*' = 들어오는 모든 요청    (들어오는 모든요청이 아닌 get방식으로 들어오는 요청에 대해서만 파일리스트를 가져오는 코드)
   fs.readdir('./data', function(error, filelist) {
