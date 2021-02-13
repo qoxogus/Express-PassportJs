@@ -40,9 +40,10 @@ var passport = require('passport') ,
 
   passport.deserializeUser(function(id, done) { //페이지에 갈때마다 로그인이 되어있는 사용자인지 아닌지 체크 (페이지를 리로드하거나 이동할때마다 console.log가 계속 호출되었다.)  {저장된 데이터를 기준으로해서 우리가 필요한 정보를 조회할때 사용하는것이 이것}
     console.log('deserializeUser', id); //deserializeUser qoxogus0809@gmail.com  (session passport에 있는 id)
+    done(null, authData); //authData가 index.js에 있는 "request.user" 라고하는 객체로 전달되게하도록 약속되어있다.
   });
 
-  passport.use(new LocalStrategy(
+  passport.use(new LocalStrategy(  //로그인에 성공했는지 실패했는지 판별하는 코드
     {
       usernameField: 'email',
       passwordField: 'pwd'
@@ -66,7 +67,7 @@ var passport = require('passport') ,
     }
   ));
 
-app.post('/auth/login_process',
+app.post('/auth/login_process', //사용자가 전송한 데이터를 받았을때 우리가 어떻게 처리할 것인지.
   passport.authenticate('local', { //local이 아닌건 페이스북이나 구글을 이용한 로그인 방식.
     // successRedirect: '/',          // 성공시 홈으로 보내고(리다이렉트)
     failureRedirect: '/auth/login', // 실패시 다시 로그인요청을 하게
