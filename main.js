@@ -21,8 +21,38 @@ app.use(session({ //세션을 활성화 시키는 코드
 
 //passport는 세션을 내부적으로 사용하기 때문에 세션을 활성화 시키는 코드 다음에 passport가 등장해야한다
 
+var authData = { //실제론 이렇게 사용하시면 안됩니다. 연습용코드입니다.
+  email:'qoxogus0809@gmail.com',
+  password:'111111',  
+  nickname:'baetaehyeon'
+}
+
 var passport = require('passport') 
-  , LocalStrategy = require('passport-local').StrategyStrategy;
+  , LocalStrategy = require('passport-local').Strategy;
+
+  passport.use(new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'pwd'
+    },
+    function(username, password, done) {
+      console.log('LocalStrategy', username, password);
+      if(username === authData.email) {
+        console.log(1);
+        if(password === authData.password) {
+          console.log(2);
+          return done(null, authData);  // authData = user정보
+        } else {
+          console.log(3);
+          return done(null, false, { message: 'Incorrect password.' });
+        }
+      } else {
+        console.log(4);
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+    }
+  ));
+
 app.post('/auth/login_process',
   passport.authenticate('local', { //local이 아닌건 페이스북이나 구글을 이용한 로그인 방식.
     successRedirect: '/',          // 성공시 홈으로 보내고(리다이렉트)

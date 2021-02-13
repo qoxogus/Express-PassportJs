@@ -1,3 +1,5 @@
+// '/auth'의 하위 부분
+
 var express = require('express');
 var router = express.Router();
 var path = require('path');
@@ -7,11 +9,7 @@ var template = require('../lib/template.js');
 
 //session에는 사용자가 로그인을 했는지를 알려줄수있는 정보, 페이지에 접근할때마다 사용자에 필요한 정보 ex)닉네임, 세션에 담아두면 DB나 파일에 다시 접근 할 필요가 없어서 효율적이다
 
-var authData = { //실제론 이렇게 사용하시면 안됩니다. 연습용코드입니다.
-  email:'qoxogus0809@gmail.com',
-  password:'111111',  
-  nickname:'baetaehyeon'
-}
+
 
 router.get('/login', function(request, response){ // /topic/:pageId보다 먼저 실행함으로써 topic을 예약어로 쓰일수있음 (실행순서 중요해짐)
   var title = 'WEB - Login';
