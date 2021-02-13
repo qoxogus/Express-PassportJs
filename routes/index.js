@@ -15,7 +15,8 @@ router.get('/', function(request, response) {
       <img src="/images/hello.jpg" style="width:300px; display:block; margin-top:10px;">
       `,                                                                          //template.HTML - control
       `<a href="/topic/create">create</a>`                                        //template.HTML - body
-      ,auth.statusUI(request, response)                                            //template.HTML - authStatusUI
+      ,
+      auth.statusUI(request, response)                                            //template.HTML - authStatusUI
       );
     response.send(html);
 });
