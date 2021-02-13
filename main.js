@@ -23,6 +23,11 @@ app.use(session({ //세션을 활성화 시키는 코드
 
 var passport = require('passport') 
   , LocalStrategy = require('passport-local').StrategyStrategy;
+app.post('/auth/login_process',
+  passport.authenticate('local', { //local이 아닌건 페이스북이나 구글을 이용한 로그인 방식.
+    successRedirect: '/',          // 성공시 홈으로 보내고(리다이렉트)
+    failureRedirect: '/auth/login' // 실패시 다시 로그인요청을 하게
+  }));
 
 app.get('*', function(request, response, next){ //next에 middleware가 담겨있다고 생각    불필요한 불러오기를 방지하기 위해 get을 사용(post방식 등에서 방지)   '*' = 들어오는 모든 요청    (들어오는 모든요청이 아닌 get방식으로 들어오는 요청에 대해서만 파일리스트를 가져오는 코드)
   fs.readdir('./data', function(error, filelist) {

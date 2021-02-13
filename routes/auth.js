@@ -28,7 +28,8 @@ router.get('/login', function(request, response){ // /topic/:pageId보다 먼저
   response.send(html);
 });
 
-router.post('/login_process', function(request, response) {
+/* 
+  router.post('/login_process', function(request, response) {
   var post = request.body; // /login의 form부분이 body이다.
   var email = post.email;
   var password = post.pwd;
@@ -45,6 +46,7 @@ router.post('/login_process', function(request, response) {
   }
     
 });
+*/
 
 router.get('/logout', function(request, response){ 
   request.session.destroy(function(err) { //세션 삭제를 위해 destroy를 사용한다. / destroy는 콜백을 받는다. 세션삭제가 완료된 후 호출되도록 약속되어있다 / err를 인자로 받는다
