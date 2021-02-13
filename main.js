@@ -16,7 +16,7 @@ app.use(session({ //세션을 활성화 시키는 코드
   secret: 'asdfasdf',
   resave: false,
   saveUninitialized: true,
-  store: new FileStore()
+  store: new FileStore(),
 }))
 
 //passport는 세션을 내부적으로 사용하기 때문에 세션을 활성화 시키는 코드 다음에 passport가 등장해야한다
@@ -27,8 +27,20 @@ var authData = { //실제론 이렇게 사용하시면 안됩니다. 연습용�
   nickname:'baetaehyeon'
 }
 
-var passport = require('passport') 
-  , LocalStrategy = require('passport-local').Strategy;
+var passport = require('passport') , 
+  LocalStrategy = require('passport-local').Strategy;
+
+  app.use(passport.initialize()); //passport를 사용하겠다 (미들웨어)
+  app.use(passport.session());    //passport는 내부적으로 세션에 쓰겠다
+
+  passport.serializeUser(function(user, done) { //로그인에 성공했을때 로그인성공여부를 세션스토어에 저장하는 기능을 하는게 serializeUser
+    console.log('serializeUser', user);  //serializeUser {email: 'qoxogus0809@gmail.com',password: '111111',nickname: 'baetaehyeon'}
+    done(null, user.email);
+  });
+
+  passport.deserializeUser(function(id, done) { //페이지에 갈때마다 로그인이 되어있는 사용자인지 아닌지 체크 (페이지를 리로드하거나 이동할때마다 console.log가 계속 호출되었다.)  {저장된 데이터를 기준으로해서 우리가 필요한 정보를 조회할때 사용하는것이 이것}
+    console.log('deserializeUser', id); //deserializeUser qoxogus0809@gmail.com  (session passport에 있는 id)
+  });
 
   passport.use(new LocalStrategy(
     {
@@ -40,8 +52,9 @@ var passport = require('passport')
       if(username === authData.email) {
         console.log(1);
         if(password === authData.password) {
+          //로그인 성공
           console.log(2);
-          return done(null, authData);  // authData = user정보
+          return done(null, authData);  // authData = user정보    여기서 보낸 데이터를 serializeUser의 콜백함수에 첫번째 인자로 주입해주도록 약속되어있다.
         } else {
           console.log(3);
           return done(null, false, { message: 'Incorrect password.' });
@@ -55,8 +68,13 @@ var passport = require('passport')
 
 app.post('/auth/login_process',
   passport.authenticate('local', { //local이 아닌건 페이스북이나 구글을 이용한 로그인 방식.
-    successRedirect: '/',          // 성공시 홈으로 보내고(리다이렉트)
-    failureRedirect: '/auth/login' // 실패시 다시 로그인요청을 하게
+    // successRedirect: '/',          // 성공시 홈으로 보내고(리다이렉트)
+    failureRedirect: '/auth/login', // 실패시 다시 로그인요청을 하게
+    function(request, response) {
+      request.session.save(function(){
+        response.redirect('/');
+      })
+    }
   }));
 
 app.get('*', function(request, response, next){ //next에 middleware가 담겨있다고 생각    불필요한 불러오기를 방지하기 위해 get을 사용(post방식 등에서 방지)   '*' = 들어오는 모든 요청    (들어오는 모든요청이 아닌 get방식으로 들어오는 요청에 대해서만 파일리스트를 가져오는 코드)
@@ -69,6 +87,7 @@ app.get('*', function(request, response, next){ //next에 middleware가 담겨�
 var indexRouter = require('./routes/index');
 var topicRouter = require('./routes/topic');
 var authRouter = require('./routes/auth');
+const { Cookie } = require('express-session');
 
 app.use('/', indexRouter);
 app.use('/topic', topicRouter); // /topic 이므로 topic.js에서는 /topic을 빼야한다
