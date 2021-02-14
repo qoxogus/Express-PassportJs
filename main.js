@@ -7,6 +7,7 @@ var helmet = require('helmet') //보안관련
 app.use(helmet());
 var session = require('express-session')
 var FileStore = require('session-file-store')(session)// 실제론 데이터베이스나 캐싱데이터베이스에 저장하는게 바람직하다.
+var flash = require('connect-flash');
 
 
 app.use(express.static('public'));
@@ -17,8 +18,22 @@ app.use(session({ //세션을 활성화 시키는 코드
   secret: 'asdfasdf',
   resave: false,
   saveUninitialized: true,
-  // store: new FileStore(),
+  store: new FileStore(),
 }))
+app.use(flash());
+
+app.get('/flash', function(req, res){
+  // Set a flash message by passing the key, followed by the value, to req.flash().
+  req.flash('msg', 'Flash is back!!'); //세션스토어에 추가됨 (1회용 메세지이므로 1회 사용하면 지워짐)
+  res.send('flash');
+});
+
+app.get('/flash-display', function(req, res){
+  // Get an array of flash messages by passing the key to req.flash()
+  var fmsg = req.flash();
+  console.log(fmsg);
+  res.send(fmsg);
+});
 
 //passport는 세션을 내부적으로 사용하기 때문에 세션을 활성화 시키는 코드 다음에 passport가 등장해야한다
 
@@ -77,6 +92,7 @@ app.post('/auth/login_process', //사용자가 전송한 데이터를 받았을�
     //     response.redirect('/');
     //   })
     // }
+    
   }));
 
 app.get('*', function(request, response, next){ //next에 middleware가 담겨있다고 생각    불필요한 불러오기를 방지하기 위해 get을 사용(post방식 등에서 방지)   '*' = 들어오는 모든 요청    (들어오는 모든요청이 아닌 get방식으로 들어오는 요청에 대해서만 파일리스트를 가져오는 코드)
