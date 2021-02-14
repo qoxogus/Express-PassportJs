@@ -12,9 +12,15 @@ var template = require('../lib/template.js');
 
 
 router.get('/login', function(request, response){ // /topic/:pageId보다 먼저 실행함으로써 topic을 예약어로 쓰일수있음 (실행순서 중요해짐)
+  var fmsg = request.flash();
+  var feedback = '';
+  if(fmsg.error) {
+    feedback = fmsg.error[0];
+  }
   var title = 'WEB - Login';
   var list = template.list(request.list);
   var html = template.HTML(title, list, `
+  <div style="color:red;">${feedback}</div>
     <form action="/auth/login_process" method="post">
       <p><input type="text" name="email" placeholder="email"></p>
       <p><input type="password" name="pwd" placeholder="password"></p>
