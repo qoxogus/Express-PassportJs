@@ -47,8 +47,12 @@ router.get('/login', function(request, response){ // /topic/:pageId보다 먼저
 */
 
 router.get('/logout', function(request, response){ 
-  request.session.destroy(function(err) { //세션 삭제를 위해 destroy를 사용한다. / destroy는 콜백을 받는다. 세션삭제가 완료된 후 호출되도록 약속되어있다 / err를 인자로 받는다
-    response.redirect('/');  
+  request.logout();
+  // request.session.destroy(function(err) { //세션 삭제를 위해 destroy를 사용한다. / destroy는 콜백을 받는다. 세션삭제가 완료된 후 호출되도록 약속되어있다 / err를 인자로 받는다
+  //   response.redirect('/');  
+  // });
+  request.session.save(function() {
+    response.redirect('/');
   })
  }); //원래 세션은 지워지고 새로운 세션울 발급하며 완전히 새로운 사람으로 인식한다
 
