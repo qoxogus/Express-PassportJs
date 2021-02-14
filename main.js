@@ -18,7 +18,7 @@ app.use(session({ //세션을 활성화 시키는 코드
   secret: 'asdfasdf',
   resave: false,
   saveUninitialized: true,
-  store: new FileStore(),
+  // store: new FileStore(),
 }))
 app.use(flash());
 
@@ -91,7 +91,7 @@ app.post('/auth/login_process', //사용자가 전송한 데이터를 받았을�
     //   request.session.save(function(){
     //     response.redirect('/');
     //   })
-    // }
+    // },
     failureFlash:true
   }));
 
